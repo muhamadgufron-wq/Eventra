@@ -1,5 +1,5 @@
 <template>
-    <header class="h-20 flex items-center justify-between px-8 bg-transparent transition-all duration-300">
+    <header class="relative z-40 h-20 flex items-center justify-between px-8 bg-transparent transition-all duration-300">
         <!-- Left: Page Title & Search -->
         <div class="flex items-center gap-10">
             <h1 class="text-xl font-bold text-surface-900 tracking-tight">Overview</h1>
@@ -54,7 +54,7 @@
                                 leave-from-class="transform opacity-100 scale-100"
                                 leave-to-class="transform opacity-0 scale-95">
                         <div v-if="showUserMenu"
-                             class="absolute right-0 mt-3 w-56 rounded-2xl bg-white shadow-2xl border border-surface-100 py-2 ring-1 ring-black/5">
+                             class="absolute right-0 mt-3 w-56 rounded-2xl bg-white shadow-2xl border border-surface-100 py-2 ring-1 ring-black/5 z-50">
                             <div class="px-4 py-3 border-b border-surface-50">
                                 <p class="text-sm font-bold text-surface-900">{{ authStore.user?.name }}</p>
                                 <p class="text-xs text-surface-500 truncate">{{ authStore.user?.email }}</p>

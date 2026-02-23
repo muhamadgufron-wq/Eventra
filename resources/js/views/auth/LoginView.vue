@@ -1,12 +1,12 @@
 <template>
     <div class="min-h-screen flex flex-col lg:flex-row overflow-hidden bg-white">
         <!-- Left Side: Branding & Marketing -->
-        <div class="hidden lg:flex lg:w-1/2 bg-[#5d8b7d] relative flex-col justify-center px-16 xl:px-24">
+        <div class="hidden lg:flex lg:w-1/2 bg-emerald-800 relative flex-col justify-center px-16 xl:px-24">
             <div class="space-y-12 relative z-10">
                 <!-- Logo Branding -->
                 <div class="mb-12">
-                    <div class="w-16 h-16 rounded-[2rem] bg-white/10 backdrop-blur-xl p-3 border border-white/20 shadow-2xl overflow-hidden">
-                        <img src="/images/logo.png" alt="Logo" class="w-full h-full object-contain filter brightness-0 invert">
+                    <div class="w-64 h-32 rounded-[1rem] bg-white/10 backdrop-blur-xl p-2 border border-white/20 shadow-2xl overflow-hidden flex items-center justify-center">
+                        <img src="/images/logo.png" alt="Logo" class="w-full h-full object-contain filter brightness-0 invert scale-125">
                     </div>
                 </div>
 
@@ -45,9 +45,6 @@
                 <!-- Login Card -->
                 <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-surface-200/50 p-10 lg:p-12 border border-surface-100">
                     <div class="text-center mb-10">
-                        <div class="w-16 h-16 rounded-2xl bg-surface-50 mx-auto mb-6 flex items-center justify-center p-3 border border-surface-100">
-                             <img src="/images/logo.png" alt="Logo" class="w-full h-full object-contain">
-                        </div>
                         <h2 class="text-2xl font-bold text-surface-900 mb-2">Masuk ke Akun Anda</h2>
                         <p class="text-sm text-surface-400 font-medium">Silakan masukkan detail akun Anda di bawah ini.</p>
                     </div>
@@ -72,7 +69,7 @@
                         <div class="space-y-2">
                             <div class="flex items-center justify-between px-1">
                                 <label class="block text-xs font-bold text-surface-500">Kata Sandi</label>
-                                <a href="#" class="text-[10px] font-black text-[#5d8b7d] uppercase tracking-wider hover:underline">Lupa password?</a>
+                                <a href="#" class="text-[10px] font-black text-emerald-600 uppercase tracking-wider hover:underline">Lupa password?</a>
                             </div>
                             <div class="relative group">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-surface-400 group-focus-within:text-primary-600 transition-colors">
@@ -107,13 +104,13 @@
                         <!-- Remember Me -->
                         <div class="flex items-center px-1">
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="checkbox" class="w-4 h-4 rounded border-surface-300 text-[#5d8b7d] focus:ring-[#5d8b7d]/20 transition-all" />
+                                <input type="checkbox" class="w-4 h-4 rounded border-surface-300 text-emerald-600 focus:ring-emerald-500/20 transition-all" />
                                 <span class="text-xs font-semibold text-surface-500 group-hover:text-surface-700">Ingat saya</span>
                             </label>
                         </div>
 
                         <button type="submit" :disabled="authStore.loading"
-                                class="w-full flex items-center justify-center gap-2 py-4 bg-[#5d8b7d] hover:bg-[#4d7368] disabled:bg-surface-300 text-white rounded-2xl font-bold shadow-xl shadow-[#5d8b7d]/20 transition-all transform active:scale-[0.98]">
+                                class="w-full flex items-center justify-center gap-2 py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-700 text-white rounded-2xl font-bold shadow-xl shadow-emerald-500/20 transition-all transform active:scale-[0.98]">
                             <span v-if="authStore.loading" class="flex items-center gap-2">
                                 <svg class="animate-spin h-5 w-5 text-white/50" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -128,7 +125,7 @@
                     <!-- Footer Link -->
                     <div class="mt-10 text-center">
                         <p class="text-xs font-semibold text-surface-400">
-                            Belum memiliki akun? <a href="#" class="text-[#5d8b7d] font-bold hover:underline">Hubungi sales kami</a>
+                            Belum memiliki akun? <a href="#" class="text-emerald-600 font-bold hover:underline">Hubungi sales kami</a>
                         </p>
                     </div>
                 </div>

@@ -16,10 +16,12 @@ class UpdateClientRequest extends FormRequest
         return [
             'bride_name'     => ['sometimes', 'required', 'string', 'max:255'],
             'groom_name'     => ['sometimes', 'required', 'string', 'max:255'],
-            'phone'          => ['nullable', 'string', 'max:20'],
+            'bride_phone'    => ['nullable', 'string', 'max:20'],
+            'groom_phone'    => ['nullable', 'string', 'max:20'],
             'email'          => ['nullable', 'email', 'max:255'],
             'event_date'     => ['nullable', 'date'],
             'event_location' => ['nullable', 'string', 'max:255'],
+            'package_id'     => ['nullable', 'exists:packages,id'],
             'notes'          => ['nullable', 'string'],
         ];
     }

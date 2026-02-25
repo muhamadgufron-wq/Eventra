@@ -13,12 +13,19 @@ class Client extends Model
     protected $fillable = [
         'bride_name',
         'groom_name',
-        'phone',
+        'bride_phone',
+        'groom_phone',
         'email',
         'event_date',
         'event_location',
+        'package_id',
         'notes',
     ];
+
+    public function package(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Package::class);
+    }
 
     protected function casts(): array
     {

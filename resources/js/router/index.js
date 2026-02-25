@@ -36,18 +36,6 @@ const routes = [
                 meta: { breadcrumb: 'Client' },
             },
             {
-                path: 'clients/create',
-                name: 'clients.create',
-                component: () => import('@/views/clients/ClientFormView.vue'),
-                meta: { breadcrumb: 'Registrasi Client' },
-            },
-            {
-                path: 'clients/:id/edit',
-                name: 'clients.edit',
-                component: () => import('@/views/clients/ClientFormView.vue'),
-                meta: { breadcrumb: 'Edit Client' },
-            },
-            {
                 path: 'packages',
                 name: 'packages',
                 component: () => import('@/views/packages/PackageListView.vue'),

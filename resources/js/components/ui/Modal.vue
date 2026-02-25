@@ -10,7 +10,9 @@
                      :class="sizeClass">
                     <!-- Header -->
                     <div class="flex items-center justify-between p-6 sm:p-8 border-b border-surface-50 bg-surface-50/30">
-                        <h3 class="text-2xl font-serif font-bold text-surface-900">{{ title }}</h3>
+                        <slot name="title">
+                            <h3 class="text-2xl font-serif font-bold text-surface-900">{{ title }}</h3>
+                        </slot>
                         <button @click="$emit('close')"
                                 class="p-2 rounded-xl hover:bg-white text-surface-400 hover:text-red-500 transition-all active:scale-95 border border-transparent hover:border-surface-100">
                             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">

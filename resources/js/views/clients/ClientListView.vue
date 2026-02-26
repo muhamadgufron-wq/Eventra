@@ -71,7 +71,14 @@
             :show="showFormModal"
             :client="selectedClient"
             @close="showFormModal = false"
-            @saved="clientStore.fetchClients({ search: searchTerm })" />
+            @saved="onClientSaved" />
+
+        <!-- Success Notification Modal -->
+        <SuccessModal
+            :show="showSuccessModal"
+            :title="successTitle"
+            :message="successMessage"
+            @close="showSuccessModal = false" />
     </div>
 </template>
 
@@ -80,6 +87,7 @@ import { ref, onMounted } from 'vue'
 import { useClientStore } from '@/stores/client'
 import DataTable from '@/components/ui/DataTable.vue'
 import Modal from '@/components/ui/Modal.vue'
+import SuccessModal from '@/components/ui/SuccessModal.vue'
 import ClientFormModal from './ClientFormModal.vue'
 
 const clientStore = useClientStore()
@@ -88,6 +96,9 @@ const showFormModal = ref(false)
 const clientToDelete = ref(null)
 const selectedClient = ref(null)
 const searchTerm = ref('')
+const showSuccessModal = ref(false)
+const successTitle = ref('Berhasil Disimpan')
+const successMessage = ref('')
 
 const columns = [
     { key: 'bride_name', label: 'Mempelai Wanita' },
@@ -128,6 +139,16 @@ const openCreateModal = () => {
 const openEditModal = (client) => {
     selectedClient.value = client
     showFormModal.value = true
+}
+
+const onClientSaved = () => {
+    const isEditing = selectedClient.value !== null
+    successTitle.value = 'Berhasil Disimpan'
+    successMessage.value = isEditing
+        ? 'Data klien telah berhasil diperbarui ke dalam sistem secara otomatis.'
+        : 'Data klien baru telah berhasil ditambahkan ke dalam sistem secara otomatis.'
+    showSuccessModal.value = true
+    clientStore.fetchClients({ search: searchTerm.value })
 }
 
 const formatDate = (date) => {

@@ -11,7 +11,9 @@ class Package extends Model
 
     protected $fillable = [
         'name',
+        'type',
         'description',
+        'services',
         'price',
         'is_active',
     ];
@@ -21,6 +23,7 @@ class Package extends Model
         return [
             'price' => 'decimal:2',
             'is_active' => 'boolean',
+            'services' => 'array',
         ];
     }
 }

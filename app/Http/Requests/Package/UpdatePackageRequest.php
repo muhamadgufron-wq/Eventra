@@ -15,7 +15,12 @@ class UpdatePackageRequest extends FormRequest
     {
         return [
             'name'        => ['sometimes', 'required', 'string', 'max:255'],
+            'type'        => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'services'    => ['nullable', 'array'],
+            'services.*.name' => ['required_with:services', 'string'],
+            'services.*.qty'  => ['nullable', 'string'],
+            'services.*.description' => ['nullable', 'string'],
             'price'       => ['sometimes', 'required', 'numeric', 'min:0'],
             'is_active'   => ['boolean'],
         ];

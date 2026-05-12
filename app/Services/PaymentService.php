@@ -27,4 +27,12 @@ class PaymentService
         // Recalculate after payment removal
         $this->invoiceService->recalculate($invoice);
     }
+
+    /**
+     * Recalculate invoice totals after payment update.
+     */
+    public function recalculateInvoice(Invoice $invoice): void
+    {
+        $this->invoiceService->recalculate($invoice);
+    }
 }

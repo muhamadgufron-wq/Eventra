@@ -82,15 +82,24 @@ class InvoiceService
         ]);
     }
 
+    /**
+     * Generate unique invoice number with database locking to prevent race conditions.
+     * Format: INV-YYYYMMDD-0001
+     */
     private function generateNumber(): string
     {
-        $prefix = 'INV-' . now()->format('Ymd');
-        $last   = Invoice::where('invoice_number', 'like', "{$prefix}%")
-                         ->orderByDesc('invoice_number')
-                         ->first();
+        return DB::transaction(function () {
+            $prefix = 'INV-' . now()->format('Ymd');
+            
+            // Lock the invoices table for update to prevent race conditions
+            $last = Invoice::where('invoice_number', 'like', "{$prefix}%")
+                ->lockForUpdate()
+                ->orderByDesc('invoice_number')
+                ->first();
 
-        $seq = $last ? ((int) substr($last->invoice_number, -4)) + 1 : 1;
+            $seq = $last ? ((int) substr($last->invoice_number, -4)) + 1 : 1;
 
-        return $prefix . '-' . str_pad($seq, 4, '0', STR_PAD_LEFT);
+            return $prefix . '-' . str_pad($seq, 4, '0', STR_PAD_LEFT);
+        });
     }
 }

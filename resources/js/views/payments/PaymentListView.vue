@@ -1,5 +1,13 @@
 <template>
-    <div>
+    <div class="space-y-6">
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2">
+            <div>
+                <h1 class="text-3xl font-serif font-bold text-surface-900">Daftar Pembayaran</h1>
+                <p class="text-xs font-bold text-surface-400 uppercase tracking-widest mt-1">Riwayat pembayaran dari klien</p>
+            </div>
+        </div>
+
         <DataTable
             :columns="columns"
             :data="paymentStore.payments"

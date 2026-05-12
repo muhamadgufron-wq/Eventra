@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Payment\StorePaymentRequest;
+use App\Http\Requests\Payment\UpdatePaymentRequest;
 use App\Http\Resources\PaymentResource;
 use App\Models\Payment;
 use App\Services\PaymentService;
@@ -34,6 +35,16 @@ class PaymentController extends Controller
         return (new PaymentResource($payment->load('invoice')))
             ->response()
             ->setStatusCode(201);
+    }
+
+    public function update(UpdatePaymentRequest $request, Payment $payment): JsonResponse
+    {
+        $payment->update($request->validated());
+
+        // Recalculate invoice after payment update
+        $this->paymentService->recalculateInvoice($payment->invoice);
+
+        return new PaymentResource($payment->load('invoice'));
     }
 
     public function destroy(Payment $payment): JsonResponse

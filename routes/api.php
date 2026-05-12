@@ -35,6 +35,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // CRUD Resources
     Route::apiResource('clients', ClientController::class);
     Route::apiResource('packages', PackageController::class);
-    Route::apiResource('invoices', InvoiceController::class)->except(['update']);
-    Route::apiResource('payments', PaymentController::class)->only(['index', 'store', 'destroy']);
+    Route::apiResource('invoices', InvoiceController::class);
+    Route::apiResource('payments', PaymentController::class)->except(['create', 'edit']);
 });

@@ -10,11 +10,7 @@
             <Topbar :collapsed="sidebarCollapsed" @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed" />
 
             <main class="p-4 sm:p-6 lg:p-8">
-                <router-view v-slot="{ Component }">
-                    <transition name="page" mode="out-in">
-                        <component :is="Component" />
-                    </transition>
-                </router-view>
+                <router-view />
             </main>
         </div>
     </div>

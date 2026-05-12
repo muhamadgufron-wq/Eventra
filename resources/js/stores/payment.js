@@ -26,6 +26,15 @@ export const usePaymentStore = defineStore('payment', {
             return data.data
         },
 
+        async updatePayment(id, payload) {
+            const { data } = await paymentService.update(id, payload)
+            const index = this.payments.findIndex(p => p.id === id)
+            if (index !== -1) {
+                this.payments[index] = data.data
+            }
+            return data.data
+        },
+
         async deletePayment(id) {
             await paymentService.delete(id)
             this.payments = this.payments.filter((p) => p.id !== id)

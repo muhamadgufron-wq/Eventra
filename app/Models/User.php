@@ -28,16 +28,18 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => \App\Enums\UserRole::class,
         ];
     }
 
     public function isOwner(): bool
     {
-        return $this->role === 'owner';
+        return $this->role === \App\Enums\UserRole::OWNER || $this->role === 'owner';
     }
 
     public function isAdmin(): bool
     {
-        return in_array($this->role, ['owner', 'admin']);
+        $roleValue = $this->role instanceof \App\Enums\UserRole ? $this->role->value : (string) $this->role;
+        return in_array($roleValue, ['owner', 'admin']);
     }
 }

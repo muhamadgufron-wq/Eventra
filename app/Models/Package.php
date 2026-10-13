@@ -21,6 +21,7 @@ class Package extends Model
     protected function casts(): array
     {
         return [
+            'type' => \App\Enums\PackageType::class,
             'price' => 'decimal:2',
             'is_active' => 'boolean',
             'services' => 'array',

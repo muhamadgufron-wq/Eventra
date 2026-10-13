@@ -15,7 +15,7 @@ class StorePackageRequest extends FormRequest
     {
         return [
             'name'        => ['required', 'string', 'max:255'],
-            'type'        => ['nullable', 'string', 'max:255'],
+            'type'        => ['nullable', new \Illuminate\Validation\Rules\Enum(\App\Enums\PackageType::class)],
             'description' => ['nullable', 'string'],
             'services'    => ['nullable', 'array'],
             'services.*.name' => ['required_with:services', 'string'],

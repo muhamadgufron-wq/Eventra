@@ -15,7 +15,7 @@ class PaymentResource extends JsonResource
             'invoice'      => new InvoiceResource($this->whenLoaded('invoice')),
             'amount'       => $this->amount,
             'payment_date' => $this->payment_date?->format('Y-m-d'),
-            'method'       => $this->method,
+            'method'       => $this->method instanceof \App\Enums\PaymentMethod ? $this->method->value : $this->method,
             'notes'        => $this->notes,
             'created_at'   => $this->created_at?->toISOString(),
         ];

@@ -12,7 +12,7 @@ class PackageResource extends JsonResource
         return [
             'id'          => $this->id,
             'name'        => $this->name,
-            'type'        => $this->type,
+            'type'        => $this->type instanceof \App\Enums\PackageType ? $this->type->value : $this->type,
             'description' => $this->description,
             'services'    => $this->services,
             'price'       => $this->price,

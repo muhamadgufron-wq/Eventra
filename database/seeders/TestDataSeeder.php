@@ -15,13 +15,13 @@ class TestDataSeeder extends Seeder
         echo "=== TEST 1: User Factory ===" . PHP_EOL;
         $users = User::factory()->count(3)->create();
         echo "Created {$users->count()} users with roles:" . PHP_EOL;
-        $users->each(fn($u) => print("- {$u->name} ({$u->role})" . PHP_EOL));
+        $users->each(fn($u) => print("- {$u->name} (" . (is_object($u->role) ? $u->role->value : $u->role) . ")" . PHP_EOL));
         echo PHP_EOL;
 
         echo "=== TEST 2: Create Sample Package ===" . PHP_EOL;
         $package = Package::create([
             'name' => 'Package Gold',
-            'type' => 'wedding',
+            'type' => \App\Enums\PackageType::WEDDING,
             'description' => 'Paket wedding gold lengkap',
             'services' => ['decoration', 'catering', 'documentation', 'makeup'],
             'price' => 25000000,
@@ -84,7 +84,8 @@ class TestDataSeeder extends Seeder
             'notes' => 'Pembayaran pertama via transfer',
         ]);
 
-        echo "Payment created: Rp " . number_format($payment->amount, 0, ',', '.') . " ({$payment->method})" . PHP_EOL;
+        $methodValue = is_object($payment->method) ? $payment->method->value : $payment->method;
+        echo "Payment created: Rp " . number_format($payment->amount, 0, ',', '.') . " ({$methodValue})" . PHP_EOL;
         echo PHP_EOL;
 
         // Recalculate invoice after payment

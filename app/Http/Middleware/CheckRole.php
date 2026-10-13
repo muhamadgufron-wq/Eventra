@@ -10,7 +10,10 @@ class CheckRole
 {
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (! $request->user() || ! in_array($request->user()->role, $roles)) {
+        $user = $request->user();
+        $userRole = $user?->role instanceof \App\Enums\UserRole ? $user->role->value : $user?->role;
+
+        if (! $user || ! in_array($userRole, $roles)) {
             abort(403, 'Unauthorized. Insufficient role.');
         }
 

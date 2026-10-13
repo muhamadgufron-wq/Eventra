@@ -84,6 +84,19 @@ const routes = [
                 component: () => import('@/views/payments/PaymentListView.vue'),
                 meta: { breadcrumb: 'Pembayaran' },
             },
+            {
+                path: 'payments/create',
+                name: 'payments.create',
+                component: () => import('@/views/payments/PaymentFormView.vue'),
+                meta: { breadcrumb: 'Catat Pembayaran' },
+            },
+            {
+                path: 'payments/:id/edit',
+                name: 'payments.edit',
+                component: () => import('@/views/payments/PaymentFormView.vue'),
+                props: true,
+                meta: { breadcrumb: 'Edit Pembayaran' },
+            },
         ],
     },
 ]

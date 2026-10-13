@@ -88,7 +88,7 @@ import { useClientStore } from '@/stores/client'
 import DataTable from '@/components/ui/DataTable.vue'
 import Modal from '@/components/ui/Modal.vue'
 import SuccessModal from '@/components/ui/SuccessModal.vue'
-import ClientFormModal from './ClientFormModal.vue'
+import ClientFormModal from '@/components/clients/ClientFormModal.vue'
 
 const clientStore = useClientStore()
 const showDeleteModal = ref(false)

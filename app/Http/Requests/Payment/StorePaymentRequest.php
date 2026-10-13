@@ -17,7 +17,7 @@ class StorePaymentRequest extends FormRequest
             'invoice_id'   => ['required', 'exists:invoices,id'],
             'amount'       => ['required', 'numeric', 'min:1'],
             'payment_date' => ['required', 'date'],
-            'method'       => ['required', 'string', 'in:cash,transfer,qris,other'],
+            'method'       => ['required', new \Illuminate\Validation\Rules\Enum(\App\Enums\PaymentMethod::class)],
             'notes'        => ['nullable', 'string'],
         ];
     }

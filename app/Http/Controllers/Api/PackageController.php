@@ -15,8 +15,10 @@ class PackageController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
+        $like = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
         $packages = Package::query()
-            ->when($request->search, fn ($q, $s) => $q->where('name', 'ilike', "%{$s}%"))
+            ->when($request->search, fn ($q, $s) => $q->where('name', $like, "%{$s}%"))
             ->latest()
             ->paginate($request->input('per_page', 15));
 

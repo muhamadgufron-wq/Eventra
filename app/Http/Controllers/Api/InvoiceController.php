@@ -18,12 +18,14 @@ class InvoiceController extends Controller
 
     public function index(Request $request): AnonymousResourceCollection
     {
+        $like = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
         $invoices = Invoice::with('client')
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
-            ->when($request->search, fn ($q, $s) => $q->where(function ($q) use ($s) {
-                $q->where('invoice_number', 'ilike', "%{$s}%")
-                  ->orWhereHas('client', fn ($q) => $q->where('bride_name', 'ilike', "%{$s}%")
-                      ->orWhere('groom_name', 'ilike', "%{$s}%"));
+            ->when($request->search, fn ($q, $s) => $q->where(function ($q) use ($s, $like) {
+                $q->where('invoice_number', $like, "%{$s}%")
+                  ->orWhereHas('client', fn ($q) => $q->where('bride_name', $like, "%{$s}%")
+                      ->orWhere('groom_name', $like, "%{$s}%"));
             }))
             ->latest('invoice_date')
             ->paginate($request->input('per_page', 15));

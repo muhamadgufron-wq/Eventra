@@ -23,6 +23,7 @@ class Payment extends Model
         return [
             'amount' => 'decimal:2',
             'payment_date' => 'date',
+            'method' => \App\Enums\PaymentMethod::class,
         ];
     }
 

@@ -18,9 +18,11 @@ class PaymentController extends Controller
 
     public function index(Request $request): AnonymousResourceCollection
     {
+        $like = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
         $payments = Payment::with('invoice')
             ->when($request->search, fn ($q, $s) => $q->whereHas('invoice', fn ($q) =>
-                $q->where('invoice_number', 'ilike', "%{$s}%")
+                $q->where('invoice_number', $like, "%{$s}%")
             ))
             ->latest('payment_date')
             ->paginate($request->input('per_page', 15));

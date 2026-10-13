@@ -15,13 +15,15 @@ class ClientController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
+        $like = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
         $clients = Client::query()
             ->with('package')
-            ->when($request->search, fn ($q, $s) => $q->where(function ($q) use ($s) {
-                $q->where('bride_name', 'ilike', "%{$s}%")
-                  ->orWhere('groom_name', 'ilike', "%{$s}%")
-                  ->orWhere('bride_phone', 'ilike', "%{$s}%")
-                  ->orWhere('groom_phone', 'ilike', "%{$s}%");
+            ->when($request->search, fn ($q, $s) => $q->where(function ($q) use ($s, $like) {
+                $q->where('bride_name', $like, "%{$s}%")
+                  ->orWhere('groom_name', $like, "%{$s}%")
+                  ->orWhere('bride_phone', $like, "%{$s}%")
+                  ->orWhere('groom_phone', $like, "%{$s}%");
             }))
             ->latest()
             ->paginate($request->input('per_page', 15));

@@ -17,7 +17,7 @@ class UpdatePaymentRequest extends FormRequest
             'invoice_id'   => ['sometimes', 'required', 'exists:invoices,id'],
             'amount'       => ['sometimes', 'required', 'numeric', 'min:1'],
             'payment_date' => ['sometimes', 'required', 'date'],
-            'method'       => ['sometimes', 'required', 'string', 'in:cash,transfer,qris,other'],
+            'method'       => ['sometimes', 'required', new \Illuminate\Validation\Rules\Enum(\App\Enums\PaymentMethod::class)],
             'notes'        => ['nullable', 'string'],
         ];
     }

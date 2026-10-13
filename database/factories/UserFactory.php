@@ -29,7 +29,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'role' => fake()->randomElement(['owner', 'admin', 'staff']),
+            'role' => fake()->randomElement([\App\Enums\UserRole::OWNER, \App\Enums\UserRole::ADMIN, \App\Enums\UserRole::STAFF]),
         ];
     }
 
@@ -39,7 +39,7 @@ class UserFactory extends Factory
     public function owner(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => 'owner',
+            'role' => \App\Enums\UserRole::OWNER,
         ]);
     }
 
@@ -49,7 +49,7 @@ class UserFactory extends Factory
     public function admin(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => 'admin',
+            'role' => \App\Enums\UserRole::ADMIN,
         ]);
     }
 
@@ -59,7 +59,7 @@ class UserFactory extends Factory
     public function staff(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => 'staff',
+            'role' => \App\Enums\UserRole::STAFF,
         ]);
     }
 

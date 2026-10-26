@@ -41,7 +41,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 bg-surface-50/50 rounded-xl border border-surface-100">
                     <div class="space-y-2">
                         <Label for="invoice-client" class="block text-[11px] font-bold text-surface-500 ml-1">Pilih Client</Label>
-                        <Select v-model="clientId">
+                        <Select v-model="clientId" @update:model-value="handleClientChange">
                             <SelectTrigger
                                 id="invoice-client"
                                 class="h-11 w-full rounded-xl border-surface-200 bg-white text-sm font-bold"
@@ -287,6 +287,7 @@ import {
 import { toast } from 'vue-sonner'
 import { useInvoiceStore } from '@/stores/invoice'
 import clientService from '@/services/clientService'
+import packageService from '@/services/packageService'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -313,8 +314,16 @@ const loadError = ref('')
 const error = ref('')
 const errors = ref({})
 const clients = ref([])
+let packageRequestId = 0
 
 const isEdit = computed(() => !!props.id)
+
+const createBlankItem = () => ({
+    package_id: null,
+    description: '',
+    quantity: 1,
+    unit_price: 0,
+})
 
 const form = reactive({
     client_id: '',
@@ -322,7 +331,7 @@ const form = reactive({
     due_date: '',
     dp_amount: 0,
     notes: '',
-    items: [{ description: '', quantity: 1, unit_price: 0 }],
+    items: [createBlankItem()],
 })
 
 const clientId = computed({
@@ -331,6 +340,48 @@ const clientId = computed({
         form.client_id = value
     },
 })
+
+const isBlankItem = (item) =>
+    !item.package_id &&
+    !String(item.description ?? '').trim() &&
+    Number(item.unit_price) === 0
+
+const handleClientChange = async (value) => {
+    if (isEdit.value) return
+
+    const client = clients.value.find((item) => String(item.id) === String(value))
+    const packageId = client?.package_id
+    const requestId = ++packageRequestId
+
+    if (!packageId) {
+        if (form.items.length > 0 && form.items.every((item) => item.package_id)) {
+            form.items = [createBlankItem()]
+        }
+
+        return
+    }
+
+    try {
+        const { data } = await packageService.getById(packageId)
+        if (requestId !== packageRequestId) return
+
+        const pkg = data.data
+        const canReplace = form.items.every((item) => item.package_id || isBlankItem(item))
+
+        if (!canReplace) return
+
+        form.items = [{
+            package_id: pkg.id,
+            description: pkg.name,
+            quantity: 1,
+            unit_price: Number(pkg.price) || 0,
+        }]
+        errors.value = {}
+    } catch (err) {
+        if (requestId !== packageRequestId) return
+        toast.error(err.response?.data?.message || 'Gagal memuat paket client.')
+    }
+}
 
 const grandTotal = computed(() =>
     form.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0)
@@ -366,6 +417,7 @@ onMounted(async () => {
                 dp_amount: Number(inv.dp_amount) || 0,
                 notes: inv.notes ?? '',
                 items: (inv.items ?? []).map((item) => ({
+                    package_id: item.package_id ?? null,
                     description: item.description ?? '',
                     quantity: Number(item.quantity) || 1,
                     unit_price: Number(item.unit_price) || 0,
@@ -381,7 +433,7 @@ onMounted(async () => {
 })
 
 const addItem = () => {
-    form.items.push({ description: '', quantity: 1, unit_price: 0 })
+    form.items.push(createBlankItem())
 }
 
 const removeItem = (index) => {
@@ -400,6 +452,7 @@ const handleSubmit = async () => {
         dp_amount: Number(form.dp_amount) || 0,
         notes: form.notes.trim(),
         items: form.items.map((item) => ({
+            package_id: item.package_id ?? null,
             description: (item.description ?? '').trim(),
             quantity: Number(item.quantity),
             unit_price: Number(item.unit_price),

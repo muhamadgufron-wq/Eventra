@@ -27,6 +27,7 @@ class InvoiceService
             foreach ($data['items'] as $item) {
                 $subtotal = $item['quantity'] * $item['unit_price'];
                 $invoice->items()->create([
+                    'package_id' => $item['package_id'] ?? null,
                     'description' => $item['description'],
                     'quantity'    => $item['quantity'],
                     'unit_price'  => $item['unit_price'],
@@ -66,6 +67,7 @@ class InvoiceService
             foreach ($data['items'] as $item) {
                 $subtotal = $item['quantity'] * $item['unit_price'];
                 $invoice->items()->create([
+                    'package_id' => $item['package_id'] ?? null,
                     'description' => $item['description'],
                     'quantity'    => $item['quantity'],
                     'unit_price'  => $item['unit_price'],

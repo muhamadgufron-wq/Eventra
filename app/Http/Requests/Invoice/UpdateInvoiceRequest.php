@@ -20,6 +20,7 @@ class UpdateInvoiceRequest extends FormRequest
             'dp_amount'           => ['nullable', 'numeric', 'min:0'],
             'notes'               => ['nullable', 'string'],
             'items'               => ['required', 'array', 'min:1'],
+            'items.*.package_id'  => ['nullable', 'exists:packages,id'],
             'items.*.description' => ['required', 'string', 'max:255'],
             'items.*.quantity'    => ['required', 'integer', 'min:1'],
             'items.*.unit_price'  => ['required', 'numeric', 'min:0'],

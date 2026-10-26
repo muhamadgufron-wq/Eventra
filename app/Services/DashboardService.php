@@ -60,8 +60,8 @@ class DashboardService
                 ->map(fn($p) => [
                     'id' => $p->id,
                     'amount' => $p->amount,
-                    'payment_date' => $p->payment_date->format('M d, Y'),
-                    'method' => $p->method,
+                    'payment_date' => $p->payment_date->format('Y-m-d'),
+                    'method' => $p->method->label(),
                     'client_name' => $p->invoice->client->bride_name . ' & ' . $p->invoice->client->groom_name,
                     'invoice_number' => $p->invoice->invoice_number,
                 ]),

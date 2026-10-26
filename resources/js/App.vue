@@ -1,10 +1,13 @@
 <template>
     <router-view />
+    <Toaster />
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { Toaster } from '@/components/ui/sonner'
+import 'vue-sonner/style.css'
 
 const authStore = useAuthStore()
 

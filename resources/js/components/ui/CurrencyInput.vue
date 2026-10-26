@@ -6,6 +6,7 @@
             <span class="text-surface-400 font-bold" :class="prefixSize">{{ prefix }}</span>
         </div>
         <input
+            :id="id"
             type="text"
             :value="displayValue"
             @input="handleInput"
@@ -24,6 +25,7 @@
 import { computed } from 'vue'
 
 const props = defineProps({
+    id: { type: String, default: undefined },
     modelValue: { type: [Number, String], default: 0 },
     prefix: { type: String, default: 'Rp' },
     placeholder: { type: String, default: '0' },

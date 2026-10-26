@@ -1,10 +1,14 @@
 <template>
     <li>
         <router-link :to="to"
+                     :title="collapsed ? label : undefined"
                      class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative"
-                     :class="isActive
-                         ? 'bg-primary-100 text-primary-700 font-semibold'
-                         : 'text-surface-600 hover:bg-surface-100 hover:text-surface-900'">
+                     :class="[
+                         isActive
+                             ? 'bg-primary-100 text-primary-700 font-semibold'
+                             : 'text-surface-600 hover:bg-surface-100 hover:text-surface-900',
+                         collapsed ? 'lg:justify-center lg:px-0' : ''
+                     ]">
             <!-- Active Indicator Bar -->
             <div v-if="isActive" class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-600 rounded-r-full"></div>
 
@@ -33,7 +37,8 @@
                 </svg>
             </div>
 
-            <span v-show="!collapsed" class="whitespace-nowrap text-sm font-medium">{{ label }}</span>
+            <span class="whitespace-nowrap text-sm font-medium"
+                  :class="{ 'lg:hidden': collapsed }">{{ label }}</span>
         </router-link>
     </li>
 </template>

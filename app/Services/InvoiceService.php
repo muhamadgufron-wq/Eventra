@@ -4,12 +4,18 @@ namespace App\Services;
 
 use App\Models\Invoice;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class InvoiceService
 {
     public function createWithItems(array $data): Invoice
     {
         return DB::transaction(function () use ($data) {
+            $this->ensureDpFitsInvoice(
+                total: $this->itemsTotal($data['items']),
+                dp: (float) ($data['dp_amount'] ?? 0),
+            );
+
             $invoice = Invoice::create([
                 'client_id'    => $data['client_id'],
                 'invoice_number' => $this->generateNumber(),
@@ -38,6 +44,14 @@ class InvoiceService
     public function updateWithItems(Invoice $invoice, array $data): Invoice
     {
         return DB::transaction(function () use ($invoice, $data) {
+            $invoice = Invoice::query()->lockForUpdate()->findOrFail($invoice->id);
+
+            $this->ensureDpFitsInvoice(
+                total: $this->itemsTotal($data['items']),
+                dp: (float) ($data['dp_amount'] ?? 0),
+                alreadyPaid: (float) $invoice->payments()->sum('amount'),
+            );
+
             $invoice->update([
                 'client_id'    => $data['client_id'],
                 'invoice_date' => $data['invoice_date'],
@@ -80,6 +94,26 @@ class InvoiceService
                 default           => 'unpaid',
             },
         ]);
+    }
+
+    private function itemsTotal(array $items): float
+    {
+        return array_reduce(
+            $items,
+            fn (float $total, array $item) => $total + ((float) $item['quantity'] * (float) $item['unit_price']),
+            0.0,
+        );
+    }
+
+    private function ensureDpFitsInvoice(float $total, float $dp, float $alreadyPaid = 0): void
+    {
+        if ($dp + $alreadyPaid > $total) {
+            throw ValidationException::withMessages([
+                'dp_amount' => $alreadyPaid > 0
+                    ? 'DP dan pembayaran yang sudah tercatat tidak boleh melebihi total invoice.'
+                    : 'DP tidak boleh melebihi total invoice.',
+            ]);
+        }
     }
 
     /**

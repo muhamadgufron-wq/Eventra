@@ -1,30 +1,52 @@
 <template>
-    <div v-if="invoice" class="max-w-5xl mx-auto space-y-8">
-        <!-- Invoice Master Document -->
+    <!-- Loading -->
+    <div v-if="loading" class="flex flex-col items-center justify-center py-32 space-y-4">
+        <Loader2Icon class="size-12 animate-spin text-primary-600" />
+        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-surface-400">Menyusun Dokumen...</p>
+    </div>
+
+    <!-- Load Error -->
+    <div v-else-if="loadError" class="max-w-5xl mx-auto">
+        <div class="rounded-3xl border border-destructive/20 bg-white p-8 shadow-sm">
+            <div class="flex items-start gap-4">
+                <div class="rounded-2xl bg-destructive/10 p-3 text-destructive">
+                    <AlertCircleIcon class="size-6" />
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-surface-900">Gagal memuat invoice</h2>
+                    <p class="mt-1 text-sm text-surface-500">{{ loadError }}</p>
+                </div>
+            </div>
+            <Button as-child variant="outline" class="mt-6 h-11 rounded-xl px-5 text-sm font-bold">
+                <RouterLink :to="{ name: 'invoices' }">Kembali ke daftar invoice</RouterLink>
+            </Button>
+        </div>
+    </div>
+
+    <!-- Invoice Master Document -->
+    <div v-else-if="invoice" class="max-w-5xl mx-auto space-y-8">
         <div class="bg-white rounded-3xl border border-surface-200 shadow-xl shadow-surface-950/5 relative overflow-hidden">
             <!-- Professional Header Section -->
             <div class="p-8 sm:p-12 border-b border-surface-100 bg-surface-50/30 relative overflow-hidden">
                 <!-- Branding Background Accent -->
                 <div class="absolute top-0 right-0 w-80 h-80 bg-primary-50 rounded-full blur-[100px] -mr-40 -mt-40 opacity-40"></div>
-                
+
                 <div class="relative z-10 flex flex-col md:flex-row justify-between gap-10">
-                    <!-- Left: WO Company Info -->
+                    <!-- Left: Company Info -->
                     <div class="space-y-6">
                         <div class="flex items-center gap-4">
                             <div class="w-14 h-14 rounded-2xl bg-primary-900 flex items-center justify-center text-white shadow-lg shadow-primary-900/10">
-                                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                </svg>
+                                <FileTextIcon class="size-8" />
                             </div>
                             <div>
-                                <h2 class="text-2xl font-serif font-bold text-surface-900 tracking-tight">WO Manager</h2>
-                                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-700">Premium Event Organizer</p>
+                                <h2 class="text-2xl font-serif font-bold text-surface-900 tracking-tight">Eventra</h2>
+                                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-700">SaaS Wedding Organizer</p>
                             </div>
                         </div>
 
                         <div class="space-y-1 text-xs font-medium text-surface-500 max-w-xs">
                             <p>Jl. Melati No. 123, Jakarta Selatan</p>
-                            <p>contact@womanager.com | (021) 555-0123</p>
+                            <p>contact@eventra.id | (021) 555-0123</p>
                         </div>
                     </div>
 
@@ -42,7 +64,7 @@
                             <div class="w-px h-8 bg-surface-200"></div>
                             <div class="text-right">
                                 <p class="text-[9px] font-black uppercase tracking-widest text-surface-400">Status Bayar</p>
-                                <Badge :variant="statusVariant(invoice.status)" class="mt-0.5 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border">
+                                <Badge :variant="statusVariant(invoice.status)" class="mt-1 h-6 rounded-full border px-3 text-[9px] font-black uppercase tracking-widest">
                                     {{ statusLabel(invoice.status) }}
                                 </Badge>
                             </div>
@@ -64,16 +86,11 @@
                         </h3>
                         <div class="space-y-2.5">
                             <p class="flex items-center gap-3 text-xs font-bold text-surface-500 uppercase tracking-wide">
-                                <svg class="w-4 h-4 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-                                </svg>
+                                <SmartphoneIcon class="size-4 text-primary-600" />
                                 {{ invoice.client?.phone || '-' }}
                             </p>
                             <p class="flex items-center gap-3 text-xs font-bold text-surface-500 uppercase tracking-wide">
-                                <svg class="w-4 h-4 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                                </svg>
+                                <MapPinIcon class="size-4 text-primary-600" />
                                 {{ invoice.client?.event_location || '-' }}
                             </p>
                         </div>
@@ -86,7 +103,7 @@
                             <span class="text-[9px] font-black text-surface-400 uppercase tracking-widest">Total Penagihan</span>
                             <span class="text-3xl font-serif font-bold text-surface-900 mt-1">{{ formatCurrency(invoice.total) }}</span>
                         </div>
-                        
+
                         <div class="pt-5 border-t border-surface-200/50">
                             <div class="flex justify-between items-end mb-3">
                                 <div class="flex flex-col">
@@ -102,9 +119,9 @@
                                     </span>
                                 </div>
                             </div>
-                            
+
                             <div class="w-full bg-surface-200 h-1.5 rounded-full overflow-hidden">
-                                <div class="bg-emerald-500 h-full transition-all duration-1000 shadow-[0_0_8px_rgba(16,185,129,0.3)]" 
+                                <div class="bg-emerald-500 h-full transition-all duration-1000 shadow-[0_0_8px_rgba(16,185,129,0.3)]"
                                      :style="{ width: `${(1 - invoice.remaining_amount / invoice.total) * 100}%` }"></div>
                             </div>
                         </div>
@@ -113,8 +130,8 @@
             </div>
 
             <!-- Items Table Section -->
-            <div class="">
-                <table class="w-full">
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[720px]">
                     <thead>
                         <tr class="bg-surface-50 border-y border-surface-100">
                             <th class="px-12 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-surface-600">Rincian Layanan</th>
@@ -142,7 +159,7 @@
                             </td>
                             <td class="px-12 py-8 text-right">
                                 <div class="flex flex-col items-end">
-                                    <span class="text-2xl font-serif font-bold text-primary-950 tracking-tight">{{ formatCurrency(invoice.total) }}</span>
+                                    <span class="text-2xl font-serif font-bold text-primary-900 tracking-tight">{{ formatCurrency(invoice.total) }}</span>
                                     <span class="text-[8px] font-black text-emerald-600 uppercase tracking-widest mt-1">Tax Included (Excl.)</span>
                                 </div>
                             </td>
@@ -160,25 +177,28 @@
                     <div class="px-8 py-5 border-b border-surface-100 flex items-center justify-between bg-surface-50/50">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75m0 5.25v.75m0 5.25v.75m11.25-13.5h.75m-12 11.25h.75m11.25-6H12m1.5 9h.75m0-12H13.5m0 0a4.5 4.5 0 1 0-9 0 4.5 4.5 0 0 0 9 0Z" />
-                                </svg>
+                                <WalletIcon class="size-4" />
                             </div>
                             <h4 class="text-xs font-black uppercase tracking-[0.2em] text-surface-600">Riwayat Pembayaran</h4>
                         </div>
-                        <button v-if="invoice.status !== 'paid'" @click="showPaymentModal = true"
-                                class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all transform active:scale-95 shadow-md shadow-emerald-700/10">
+                        <Button
+                            v-if="invoice.status !== 'paid'"
+                            type="button"
+                            class="h-9 gap-2 rounded-xl bg-emerald-600 px-4 text-[10px] font-black uppercase tracking-widest text-white shadow-md shadow-emerald-700/10 hover:bg-emerald-700"
+                            @click="openPaymentModal">
+                            <PlusIcon class="size-4" />
                             Tambah Dana
-                        </button>
+                        </Button>
                     </div>
 
-                    <div class="p-0">
-                        <table v-if="invoice.payments?.length || (invoice.dp_amount > 0)" class="w-full">
+                    <div class="overflow-x-auto">
+                        <table v-if="invoice.payments?.length || (invoice.dp_amount > 0)" class="w-full min-w-[640px]">
                             <thead class="bg-surface-50/30">
                                 <tr class="border-b border-surface-100">
                                     <th class="px-8 py-3 text-left text-[9px] font-black uppercase tracking-widest text-surface-400">Tanggal</th>
                                     <th class="px-8 py-3 text-left text-[9px] font-black uppercase tracking-widest text-surface-400">Metode</th>
                                     <th class="px-8 py-3 text-right text-[9px] font-black uppercase tracking-widest text-surface-400">Jumlah</th>
+                                    <th class="px-4 py-3 text-right text-[9px] font-black uppercase tracking-widest text-surface-400">Kwitansi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-surface-100">
@@ -187,19 +207,45 @@
                                     <td class="px-8 py-4 text-xs font-bold text-surface-900">{{ formatDate(invoice.invoice_date) }}</td>
                                     <td class="px-8 py-4">
                                         <div class="flex items-center gap-2">
-                                            <span class="px-2 py-0.5 bg-emerald-100 rounded text-[9px] font-black text-emerald-600 uppercase tracking-tighter">Uang Muka</span>
+                                            <Badge variant="success" class="h-5 px-2 text-[9px] font-black uppercase tracking-tighter">Uang Muka</Badge>
                                             <span class="text-[10px] font-bold text-surface-400">#DP</span>
                                         </div>
                                     </td>
                                     <td class="px-8 py-4 text-right text-xs font-bold text-emerald-600">{{ formatCurrency(invoice.dp_amount) }}</td>
+                                    <td class="px-4 py-4 text-right">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon-sm"
+                                            class="text-surface-500 hover:text-primary-600"
+                                            aria-label="Cetak kwitansi DP"
+                                            :disabled="Boolean(pdfLoading)"
+                                            @click="printDpReceipt">
+                                            <Loader2Icon v-if="pdfLoading === 'dp'" class="size-4 animate-spin" />
+                                            <PrinterIcon v-else class="size-4" />
+                                        </Button>
+                                    </td>
                                 </tr>
 
                                 <tr v-for="payment in invoice.payments" :key="payment.id" class="group hover:bg-emerald-50/10 transition-colors">
                                     <td class="px-8 py-4 text-xs font-bold text-surface-900">{{ formatDate(payment.payment_date) }}</td>
                                     <td class="px-8 py-4">
-                                        <span class="px-2 py-0.5 bg-surface-100 rounded text-[9px] font-bold text-surface-500 uppercase tracking-tighter">{{ payment.method }}</span>
+                                        <Badge variant="secondary" class="h-5 px-2 text-[9px] font-bold uppercase tracking-tighter">{{ payment.method }}</Badge>
                                     </td>
                                     <td class="px-8 py-4 text-right text-xs font-bold text-emerald-600">{{ formatCurrency(payment.amount) }}</td>
+                                    <td class="px-4 py-4 text-right">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon-sm"
+                                            class="text-surface-500 hover:text-primary-600"
+                                            :aria-label="`Cetak kwitansi pembayaran ${formatCurrency(payment.amount)}`"
+                                            :disabled="Boolean(pdfLoading)"
+                                            @click="printPaymentReceipt(payment)">
+                                            <Loader2Icon v-if="pdfLoading === 'payment-' + payment.id" class="size-4 animate-spin" />
+                                            <PrinterIcon v-else class="size-4" />
+                                        </Button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -221,112 +267,290 @@
                     </div>
 
                     <div class="space-y-3">
-                        <button class="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary-950 text-accent-400 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-primary-900 transition-all shadow-xl shadow-primary-950/20 active:scale-[0.98]">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231a1.125 1.125 0 0 1-1.122-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-14.326 0C3.768 7.441 3 8.375 3 9.456V15.75a2.25 2.25 0 0 0 2.25 2.25h1.091M9 13.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
-                            </svg>
-                            Cetak Invoice PDF
-                        </button>
+                        <Button
+                            type="button"
+                            class="h-12 w-full gap-2 rounded-2xl bg-primary-900 text-[10px] font-black uppercase tracking-[0.2em] text-accent-400 shadow-xl shadow-primary-900/20 hover:bg-primary-800"
+                            :disabled="Boolean(pdfLoading)"
+                            @click="printInvoice">
+                            <Loader2Icon v-if="pdfLoading === 'invoice'" class="size-4 animate-spin" />
+                            <PrinterIcon v-else class="size-4" />
+                            {{ pdfLoading === 'invoice' ? 'Menyiapkan...' : 'Cetak Invoice PDF' }}
+                        </Button>
+
+                        <Button
+                            v-if="invoice.status === 'paid'"
+                            type="button"
+                            variant="outline"
+                            class="h-12 w-full gap-2 rounded-2xl border-primary-200 text-[10px] font-black uppercase tracking-[0.2em] text-primary-700 hover:bg-primary-50"
+                            :disabled="Boolean(pdfLoading)"
+                            @click="printPaidInvoice">
+                            <Loader2Icon v-if="pdfLoading === 'paid'" class="size-4 animate-spin" />
+                            <PrinterIcon v-else class="size-4" />
+                            {{ pdfLoading === 'paid' ? 'Menyiapkan...' : 'Cetak Invoice Lunas' }}
+                        </Button>
+
+                        <p class="text-[10px] font-medium leading-relaxed text-surface-400">
+                            Invoice dapat dicetak kapan saja. Invoice Lunas tersedia setelah pembayaran selesai.
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Payment Modal -->
-        <Modal :show="showPaymentModal" title="Rekam Pembayaran Baru" @close="showPaymentModal = false">
-            <form @submit.prevent="handleAddPayment" class="p-2 space-y-5">
+    <!-- Invoice Not Found -->
+    <div v-else class="max-w-5xl mx-auto">
+        <div class="rounded-3xl border border-surface-200 bg-white p-8 text-center shadow-sm">
+            <p class="text-sm font-bold text-surface-500">Invoice tidak ditemukan.</p>
+            <Button as-child variant="outline" class="mt-6 h-11 rounded-xl px-5 text-sm font-bold">
+                <RouterLink :to="{ name: 'invoices' }">Kembali ke daftar invoice</RouterLink>
+            </Button>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <Dialog v-if="invoice" v-model:open="showPaymentModal">
+        <DialogContent class="sm:max-w-md">
+            <DialogHeader>
+                <DialogTitle class="text-xl font-bold">Rekam Pembayaran Baru</DialogTitle>
+                <DialogDescription class="sr-only">Form untuk mencatat pembayaran invoice.</DialogDescription>
+            </DialogHeader>
+
+            <form id="paymentForm" class="space-y-4" @submit.prevent="handleAddPayment">
                 <div class="space-y-2">
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">Jumlah Bayar (IDR)</label>
-                    <CurrencyInput v-model="paymentForm.amount" required
-                                   input-class="w-full pl-10 pr-4 py-3 bg-surface-50 border border-surface-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all font-bold" />
+                    <Label for="payment-amount" class="text-[10px] font-black uppercase tracking-widest text-surface-500">
+                        Jumlah Bayar (IDR)
+                    </Label>
+                    <CurrencyInput
+                        id="payment-amount"
+                        v-model="paymentForm.amount"
+                        required
+                        input-class="h-10 w-full rounded-lg border border-surface-200 bg-surface-50 text-sm font-bold focus:outline-none focus:ring-3 focus:ring-primary-500/10 focus:border-primary-500" />
+                    <p class="text-[10px] font-medium text-surface-400">
+                        Sisa tagihan saat ini: <strong>{{ formatCurrency(invoice.remaining_amount) }}</strong>
+                    </p>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">Tanggal</label>
-                        <input v-model="paymentForm.payment_date" type="date" required
-                               class="w-full px-4 py-3 bg-surface-50 border border-surface-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all text-sm font-medium" />
+                        <Label for="payment-date" class="text-[10px] font-black uppercase tracking-widest text-surface-500">Tanggal</Label>
+                        <Input id="payment-date" v-model="paymentForm.payment_date" type="date" required class="h-10" />
                     </div>
                     <div class="space-y-2">
-                        <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">Metode</label>
-                        <select v-model="paymentForm.method"
-                                class="w-full px-4 py-3 bg-surface-50 border border-surface-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all text-sm font-bold">
-                            <option value="transfer">Transfer Bank</option>
-                            <option value="cash">Tunai (Cash)</option>
-                            <option value="qris">QRIS / Digital</option>
-                            <option value="other">Lainnya</option>
-                        </select>
+                        <Label for="payment-method" class="text-[10px] font-black uppercase tracking-widest text-surface-500">Metode</Label>
+                        <Select v-model="paymentForm.method">
+                            <SelectTrigger id="payment-method" class="h-10 w-full">
+                                <SelectValue placeholder="Pilih metode" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="transfer">Transfer Bank</SelectItem>
+                                <SelectItem value="cash">Tunai (Cash)</SelectItem>
+                                <SelectItem value="qris">QRIS / Digital</SelectItem>
+                                <SelectItem value="other">Lainnya</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
+
                 <div class="space-y-2">
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">Catatan Internal</label>
-                    <input v-model="paymentForm.notes" type="text" placeholder="Misal: Bukti transfer terlampir via WA"
-                           class="w-full px-4 py-3 bg-surface-50 border border-surface-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all text-sm font-medium" />
+                    <Label for="payment-notes" class="text-[10px] font-black uppercase tracking-widest text-surface-500">Catatan Internal</Label>
+                    <Input
+                        id="payment-notes"
+                        v-model="paymentForm.notes"
+                        type="text"
+                        placeholder="Misal: Bukti transfer terlampir via WA"
+                        class="h-10" />
                 </div>
+
+                <p v-if="paymentError" role="alert" class="rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-xs font-medium text-destructive">
+                    {{ paymentError }}
+                </p>
             </form>
-            <template #footer>
-                <div class="flex items-center justify-end gap-3 w-full">
-                    <button @click="showPaymentModal = false"
-                            class="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-surface-500 hover:bg-surface-100 rounded-xl transition-all">
-                        Batal
-                    </button>
-                    <button @click="handleAddPayment" :disabled="paymentSubmitting"
-                            class="px-6 py-2.5 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-700/20 active:scale-95 disabled:opacity-50">
-                        {{ paymentSubmitting ? 'Menyimpan...' : 'Konfirmasi Bayar' }}
-                    </button>
-                </div>
-            </template>
-        </Modal>
-    </div>
 
-    <!-- Loading -->
-    <div v-else class="flex flex-col items-center justify-center py-32 space-y-4">
-        <div class="w-12 h-12 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin"></div>
-        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-surface-400">Menyusun Dokumen...</p>
-    </div>
+            <DialogFooter>
+                <Button type="button" variant="ghost" class="h-10 px-4" :disabled="paymentSubmitting" @click="showPaymentModal = false">
+                    Batal
+                </Button>
+                <Button type="submit" form="paymentForm" class="h-10 px-6" :disabled="paymentSubmitting">
+                    <Loader2Icon v-if="paymentSubmitting" class="size-4 animate-spin" />
+                    {{ paymentSubmitting ? 'Menyimpan...' : 'Konfirmasi Bayar' }}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+import {
+    AlertCircleIcon,
+    FileTextIcon,
+    Loader2Icon,
+    MapPinIcon,
+    PlusIcon,
+    PrinterIcon,
+    SmartphoneIcon,
+    WalletIcon,
+} from '@lucide/vue'
+import { toast } from 'vue-sonner'
 import { useInvoiceStore } from '@/stores/invoice'
 import { usePaymentStore } from '@/stores/payment'
-import Badge from '@/components/ui/Badge.vue'
-import Modal from '@/components/ui/Modal.vue'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
 import CurrencyInput from '@/components/ui/CurrencyInput.vue'
+import pdfService from '@/services/pdfService'
 import { formatCurrency, formatDate } from '@/utils/format'
+import { openPdfRequest, pdfErrorMessage } from '@/utils/pdf'
 
 const route = useRoute()
 const invoiceStore = useInvoiceStore()
 const paymentStore = usePaymentStore()
 const showPaymentModal = ref(false)
 const paymentSubmitting = ref(false)
+const loading = ref(true)
+const loadError = ref('')
+const paymentError = ref('')
+const pdfLoading = ref('')
 
 const invoice = computed(() => invoiceStore.currentInvoice)
 
+const today = () => new Date().toISOString().split('T')[0]
+
 const paymentForm = reactive({
     amount: 0,
-    payment_date: new Date().toISOString().split('T')[0],
+    payment_date: today(),
     method: 'transfer',
     notes: '',
 })
 
-onMounted(() => {
-    invoiceStore.fetchInvoice(route.params.id)
-})
+const loadInvoice = async () => {
+    loading.value = true
+    loadError.value = ''
+
+    try {
+        await invoiceStore.fetchInvoice(route.params.id)
+    } catch (err) {
+        loadError.value = err.response?.data?.message || 'Gagal mengambil data invoice.'
+        toast.error(loadError.value)
+    } finally {
+        loading.value = false
+    }
+}
+
+onMounted(loadInvoice)
+watch(() => route.params.id, loadInvoice)
+
+const generatePdf = async (key, request, fallbackFilename, errorMessage) => {
+    if (pdfLoading.value) return
+
+    pdfLoading.value = key
+
+    try {
+        await openPdfRequest(request, fallbackFilename)
+    } catch (err) {
+        toast.error(await pdfErrorMessage(err, errorMessage))
+    } finally {
+        pdfLoading.value = ''
+    }
+}
+
+const printInvoice = () => generatePdf(
+    'invoice',
+    () => pdfService.invoice(invoice.value.id),
+    `Invoice-${invoice.value.invoice_number}.pdf`,
+    'Gagal membuat PDF invoice.',
+)
+
+const printPaidInvoice = () => generatePdf(
+    'paid',
+    () => pdfService.paidInvoice(invoice.value.id),
+    `Invoice-Lunas-${invoice.value.invoice_number}.pdf`,
+    'Gagal membuat Invoice Lunas.',
+)
+
+const printDpReceipt = () => generatePdf(
+    'dp',
+    () => pdfService.dpReceipt(invoice.value.id),
+    `Kwitansi-DP-${invoice.value.invoice_number}.pdf`,
+    'Gagal membuat kwitansi DP.',
+)
+
+const printPaymentReceipt = (payment) => generatePdf(
+    `payment-${payment.id}`,
+    () => pdfService.paymentReceipt(payment.id),
+    `Kwitansi-${invoice.value.invoice_number}-${payment.id}.pdf`,
+    'Gagal membuat kwitansi pembayaran.',
+)
+
+const openPaymentModal = () => {
+    paymentError.value = ''
+    showPaymentModal.value = true
+}
+
+const resetPaymentForm = () => {
+    Object.assign(paymentForm, {
+        amount: 0,
+        payment_date: today(),
+        method: 'transfer',
+        notes: '',
+    })
+}
 
 const handleAddPayment = async () => {
-    if (paymentForm.amount <= 0) return
+    const amount = Number(paymentForm.amount)
+
+    if (!amount || amount <= 0) {
+        paymentError.value = 'Jumlah pembayaran harus lebih dari 0.'
+        return
+    }
+
     paymentSubmitting.value = true
+    paymentError.value = ''
+
     try {
         await paymentStore.createPayment({
             invoice_id: invoice.value.id,
-            ...paymentForm,
+            amount,
+            payment_date: paymentForm.payment_date,
+            method: paymentForm.method,
+            notes: paymentForm.notes.trim(),
         })
+
         showPaymentModal.value = false
-        // Refresh invoice to get updated status and payments
-        await invoiceStore.fetchInvoice(route.params.id)
-        // Reset form
-        Object.assign(paymentForm, { amount: 0, payment_date: new Date().toISOString().split('T')[0], method: 'transfer', notes: '' })
+        toast.success('Pembayaran Dicatat', {
+            description: `${formatCurrency(amount)} berhasil ditambahkan ke invoice.`,
+        })
+        resetPaymentForm()
+
+        try {
+            await invoiceStore.fetchInvoice(route.params.id)
+        } catch {
+            toast.error('Pembayaran tersimpan, tetapi riwayat invoice gagal dimuat ulang.')
+        }
+    } catch (err) {
+        const data = err.response?.data
+        paymentError.value = data?.errors
+            ? Object.values(data.errors)[0]?.[0]
+            : data?.message || 'Gagal mencatat pembayaran.'
+        toast.error(paymentError.value)
     } finally {
         paymentSubmitting.value = false
     }

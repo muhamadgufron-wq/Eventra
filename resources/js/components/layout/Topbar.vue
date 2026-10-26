@@ -1,12 +1,31 @@
 <template>
-    <header class="relative z-50 h-20 flex items-center justify-between px-6 sm:px-8 bg-white border-b border-surface-200 shadow-sm">
-        <!-- Left: Page Title -->
-        <div class="flex items-center gap-4">
-            <h1 class="text-2xl font-bold text-surface-900 tracking-tight">{{ pageTitle }}</h1>
+    <header class="sticky top-0 z-20 flex min-h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 bg-white border-b border-surface-200 shadow-sm">
+        <!-- Left: Menu toggle + Page title -->
+        <div class="flex items-center gap-3 min-w-0">
+            <button type="button"
+                    @click="$emit('toggleSidebar')"
+                    class="p-2.5 rounded-xl border border-surface-100 text-surface-500 hover:text-surface-800 hover:bg-surface-50 transition-all active:scale-95 flex-shrink-0"
+                    aria-label="Toggle menu">
+                <!-- Mobile: hamburger -->
+                <svg class="w-5 h-5 lg:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+                <!-- Desktop: collapse -->
+                <svg class="hidden lg:block w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m-4.5-15h15a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5h-15a1.5 1.5 0 0 1-1.5-1.5v-12a1.5 1.5 0 0 1 1.5-1.5Z" />
+                </svg>
+            </button>
+
+            <div class="min-w-0">
+                <div class="hidden md:block">
+                    <Breadcrumbs />
+                </div>
+                <h1 class="text-xl sm:text-2xl font-bold text-surface-900 tracking-tight truncate">{{ pageTitle }}</h1>
+            </div>
         </div>
 
         <!-- Right: User Profile -->
-        <div class="flex items-center">
+        <div class="flex items-center flex-shrink-0">
             <div class="relative" ref="dropdownRef">
                 <button @click="showUserMenu = !showUserMenu"
                         class="flex items-center gap-4 group transition-all duration-300 hover:scale-[1.02]">
@@ -50,6 +69,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 
 defineEmits(['toggleSidebar'])
 
@@ -59,22 +79,7 @@ const router = useRouter()
 const showUserMenu = ref(false)
 const dropdownRef = ref(null)
 
-const pageTitle = computed(() => {
-    const titles = {
-        dashboard: 'Dashboard',
-        clients: 'Clients',
-        'clients.create': 'Tambah Client',
-        'clients.edit': 'Edit Client',
-        packages: 'Packages',
-        'packages.create': 'Tambah Paket',
-        'packages.edit': 'Edit Paket',
-        invoices: 'Invoices',
-        'invoices.create': 'Buat Invoice',
-        'invoices.detail': 'Detail Invoice',
-        payments: 'Payments',
-    }
-    return titles[route.name] ?? 'WO Manager'
-})
+const pageTitle = computed(() => route.meta.breadcrumb ?? 'WO Manager')
 
 const userInitials = computed(() => {
     const name = authStore.user?.name

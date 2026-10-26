@@ -59,7 +59,7 @@ const cardClasses = computed(() => {
     const maps = {
         success: 'hover:shadow-emerald-500/10',
         warning: 'hover:shadow-amber-500/10',
-        danger:  'hover:shadow-blue-500/10',
+        danger:  'hover:shadow-red-500/10',
         accent:  'hover:shadow-violet-500/10',
         primary: 'hover:shadow-sky-500/10',
     }
@@ -79,9 +79,9 @@ const colorClasses = computed(() => {
             orb: 'bg-amber-400',
         },
         danger: {
-            icon: 'bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-blue-500/30',
-            strip: 'bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500',
-            orb: 'bg-blue-400',
+            icon: 'bg-gradient-to-br from-red-400 to-red-600 text-white shadow-red-500/30',
+            strip: 'bg-gradient-to-r from-red-400 via-red-500 to-rose-500',
+            orb: 'bg-red-400',
         },
         accent: {
             icon: 'bg-gradient-to-br from-violet-400 to-purple-600 text-white shadow-violet-500/30',

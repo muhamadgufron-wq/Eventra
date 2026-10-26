@@ -1,62 +1,68 @@
 <template>
-  <nav v-if="breadcrumbs.length > 0" class="flex items-center space-x-2 text-[11px] font-bold uppercase tracking-[0.1em] mb-1">
-    <div v-for="(crumb, index) in breadcrumbs" :key="index" class="flex items-center">
+  <nav v-if="breadcrumbs.length > 0" class="flex items-center space-x-1 text-[10px] font-bold uppercase tracking-[0.15em] mb-1" aria-label="Breadcrumb">
+    <template v-for="(crumb, index) in breadcrumbs" :key="crumb.label + index">
       <!-- Separator -->
-      <svg v-if="index > 0" class="w-3 h-3 text-surface-300 mx-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+      <svg v-if="index > 0" class="w-3 h-3 text-surface-300 mx-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
         <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
       </svg>
 
       <!-- Link / Text -->
       <router-link
         v-if="index < breadcrumbs.length - 1"
-        :to="crumb.path"
-        class="text-surface-400 hover:text-primary-600 transition-colors"
+        :to="crumb.to"
+        class="text-surface-400 hover:text-primary-600 transition-colors whitespace-nowrap"
       >
         {{ crumb.label }}
       </router-link>
-      <span v-else class="text-accent-500">
+      <span v-else class="text-accent-600 whitespace-nowrap" aria-current="page">
         {{ crumb.label }}
       </span>
-    </div>
+    </template>
   </nav>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 
 const breadcrumbs = computed(() => {
-  const crumbs = []
-  
-  // Start with root/Beranda if not on dashboard
-  if (route.name !== 'dashboard') {
-     crumbs.push({ label: 'Beranda', path: '/' })
+  // The dashboard is the root page — a breadcrumb would be redundant.
+  if (route.name === 'dashboard') return []
+
+  const current = [...route.matched].reverse().find(record => record.meta?.breadcrumb)
+  if (!current) return []
+
+  const trail = []
+  const seen = new Set()
+
+  const push = (record, params = {}) => {
+    const key = record.name ?? record.path
+    if (!record.meta?.breadcrumb || seen.has(key)) return
+
+    seen.add(key)
+    trail.unshift({
+      label: record.meta.breadcrumb,
+      to: record.name ? { name: record.name, params } : '/',
+    })
   }
 
-  // Get matched routes that have breadcrumb meta
-  const matched = route.matched.filter(m => m.meta && m.meta.breadcrumb)
-  
-  matched.forEach((m, idx) => {
-    // Avoid double "Beranda" or "Dashboard" if already added
-    const label = m.meta.breadcrumb
-    if (label === 'Beranda' || (label === 'Dashboard' && route.name === 'dashboard')) {
-        if (!crumbs.find(c => c.label === label)) {
-            crumbs.push({ label, path: m.path || '/' })
-        }
-        return
-    }
+  // Current page
+  push(current, route.params)
 
-    crumbs.push({
-      label,
-      path: m.path
-    })
-  })
+  // Walk up optional parent chain (e.g. Invoice → Edit Invoice)
+  let parentName = current.meta?.parent
+  while (parentName) {
+    const parent = router.getRoutes().find(record => record.name === parentName)
+    if (!parent) break
 
-  // Deduplicate and filter out empty paths/labels if any
-  return crumbs.filter((c, i, self) => 
-    c.label && self.findIndex(t => t.label === c.label) === i
-  )
+    push(parent)
+    parentName = parent.meta?.parent
+  }
+
+  trail.unshift({ label: 'Beranda', to: '/' })
+  return trail
 })
 </script>

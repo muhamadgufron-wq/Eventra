@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\InvoiceController;
+use App\Http\Controllers\Api\InvoicePdfController;
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Http\Request;
@@ -31,6 +32,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Dashboard
     Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+
+    // Invoice and payment PDFs
+    Route::get('/invoices/{invoice}/pdf', [InvoicePdfController::class, 'invoice'])->name('invoices.pdf');
+    Route::get('/invoices/{invoice}/paid-pdf', [InvoicePdfController::class, 'paidInvoice'])->name('invoices.paid-pdf');
+    Route::get('/invoices/{invoice}/dp-receipt', [InvoicePdfController::class, 'dpReceipt'])->name('invoices.dp-receipt');
+    Route::get('/payments/{payment}/receipt', [InvoicePdfController::class, 'paymentReceipt'])->name('payments.receipt');
 
     // CRUD Resources
     Route::apiResource('clients', ClientController::class);

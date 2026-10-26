@@ -19,9 +19,14 @@ class InvoiceController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $like = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+        $statuses = collect(explode(',', (string) $request->input('status')))
+            ->map(fn ($status) => trim($status))
+            ->filter()
+            ->values()
+            ->all();
 
         $invoices = Invoice::with('client')
-            ->when($request->status, fn ($q, $s) => $q->where('status', $s))
+            ->when($statuses, fn ($q) => $q->whereIn('status', $statuses))
             ->when($request->search, fn ($q, $s) => $q->where(function ($q) use ($s, $like) {
                 $q->where('invoice_number', $like, "%{$s}%")
                   ->orWhereHas('client', fn ($q) => $q->where('bride_name', $like, "%{$s}%")

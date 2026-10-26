@@ -39,12 +39,14 @@ class PaymentController extends Controller
             ->setStatusCode(201);
     }
 
-    public function update(UpdatePaymentRequest $request, Payment $payment): JsonResponse
+    public function show(Payment $payment): PaymentResource
     {
-        $payment->update($request->validated());
+        return new PaymentResource($payment->load('invoice.client'));
+    }
 
-        // Recalculate invoice after payment update
-        $this->paymentService->recalculateInvoice($payment->invoice);
+    public function update(UpdatePaymentRequest $request, Payment $payment): PaymentResource
+    {
+        $payment = $this->paymentService->updatePayment($payment, $request->validated());
 
         return new PaymentResource($payment->load('invoice'));
     }

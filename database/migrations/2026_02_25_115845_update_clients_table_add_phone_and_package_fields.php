@@ -22,6 +22,11 @@ return new class extends Migration
             'bride_phone' => \DB::raw('phone')
         ]);
 
+        // SQLite requires the index to be removed before the indexed column.
+        Schema::table('clients', function (Blueprint $table) {
+            $table->dropIndex(['phone']);
+        });
+
         Schema::table('clients', function (Blueprint $table) {
             $table->dropColumn('phone');
         });

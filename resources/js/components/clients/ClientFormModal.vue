@@ -1,102 +1,185 @@
 <template>
-    <Modal :show="show" size="xl" @close="$emit('close')">
-        <template #title>
-            <div class="flex items-center gap-2">
-                <div class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
-                    </svg>
-                </div>
-                <span class="text-xl font-bold">{{ isEdit ? 'Ubah Client' : 'Klien Baru' }}</span>
-            </div>
-        </template>
-        <form id="clientForm" @submit.prevent="handleSubmit" class="space-y-4">
-            <!-- Bride info -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="space-y-1.5">
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">Nama Pengantin Wanita</label>
-                    <input v-model="form.bride_name" type="text" required placeholder="Masukan nama pengantin wanita"
-                           class="w-full px-4 py-2 bg-surface-50 border border-surface-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium" />
-                </div>
-                <div class="space-y-1.5">
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">Nama Pengantin Pria</label>
-                    <input v-model="form.groom_name" type="text" required placeholder="Masukan nama pengantin pria"
-                           class="w-full px-4 py-2 bg-surface-50 border border-surface-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium" />
-                </div>
-            </div>
+    <Dialog v-model:open="open">
+        <DialogContent class="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
+            <DialogHeader>
+                <DialogTitle class="flex items-center gap-2 text-xl font-bold">
+                    <span class="rounded-lg bg-primary-50 p-1.5 text-primary-600">
+                        <UserPlusIcon class="size-5" />
+                    </span>
+                    {{ isEdit ? 'Ubah Client' : 'Klien Baru' }}
+                </DialogTitle>
+                <DialogDescription class="sr-only">
+                    Form untuk {{ isEdit ? 'mengubah' : 'menambahkan' }} data client.
+                </DialogDescription>
+            </DialogHeader>
 
-            <!-- Phones -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="space-y-1.5">
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">No. Handphone Wanita</label>
-                    <input v-model="form.bride_phone" type="text" placeholder="08..."
-                           class="w-full px-4 py-2 bg-surface-50 border border-surface-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium" />
+            <form id="clientForm" class="space-y-4" @submit.prevent="handleSubmit">
+                <!-- Bride info -->
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div class="space-y-1.5">
+                        <Label for="bride_name" class="text-[10px] font-black uppercase tracking-widest text-surface-500">
+                            Nama Pengantin Wanita
+                        </Label>
+                        <Input
+                            id="bride_name"
+                            v-model="form.bride_name"
+                            type="text"
+                            required
+                            placeholder="Masukan nama pengantin wanita"
+                            class="h-10" />
+                    </div>
+                    <div class="space-y-1.5">
+                        <Label for="groom_name" class="text-[10px] font-black uppercase tracking-widest text-surface-500">
+                            Nama Pengantin Pria
+                        </Label>
+                        <Input
+                            id="groom_name"
+                            v-model="form.groom_name"
+                            type="text"
+                            required
+                            placeholder="Masukan nama pengantin pria"
+                            class="h-10" />
+                    </div>
                 </div>
-                <div class="space-y-1.5">
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">No. Handphone Pria</label>
-                    <input v-model="form.groom_phone" type="text" placeholder="08..."
-                           class="w-full px-4 py-2 bg-surface-50 border border-surface-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium" />
+
+                <!-- Phones -->
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div class="space-y-1.5">
+                        <Label for="bride_phone" class="text-[10px] font-black uppercase tracking-widest text-surface-500">
+                            No. Handphone Wanita
+                        </Label>
+                        <Input
+                            id="bride_phone"
+                            v-model="form.bride_phone"
+                            type="tel"
+                            placeholder="08..."
+                            class="h-10" />
+                    </div>
+                    <div class="space-y-1.5">
+                        <Label for="groom_phone" class="text-[10px] font-black uppercase tracking-widest text-surface-500">
+                            No. Handphone Pria
+                        </Label>
+                        <Input
+                            id="groom_phone"
+                            v-model="form.groom_phone"
+                            type="tel"
+                            placeholder="08..."
+                            class="h-10" />
+                    </div>
                 </div>
-            </div>
 
-            <!-- Address -->
-            <div class="space-y-1.5">
-                <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">Alamat Acara</label>
-                <input v-model="form.event_location" type="text" placeholder="Masukan alamat acara"
-                       class="w-full px-4 py-3 bg-surface-50 border border-surface-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium" />
-            </div>
-
-            <!-- Date & Package -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Address -->
                 <div class="space-y-1.5">
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">Tanggal Acara</label>
-                    <input v-model="form.event_date" type="date"
-                           class="w-full px-4 py-2 bg-surface-50 border border-surface-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium" />
+                    <Label for="event_location" class="text-[10px] font-black uppercase tracking-widest text-surface-500">
+                        Alamat Acara
+                    </Label>
+                    <Input
+                        id="event_location"
+                        v-model="form.event_location"
+                        type="text"
+                        placeholder="Masukan alamat acara"
+                        class="h-10" />
                 </div>
+
+                <!-- Date & Package -->
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div class="space-y-1.5">
+                        <Label for="event_date" class="text-[10px] font-black uppercase tracking-widest text-surface-500">
+                            Tanggal Acara
+                        </Label>
+                        <Input
+                            id="event_date"
+                            v-model="form.event_date"
+                            type="date"
+                            class="h-10" />
+                    </div>
+                    <div class="space-y-1.5">
+                        <Label for="package_id" class="text-[10px] font-black uppercase tracking-widest text-surface-500">
+                            Paket Pernikahan
+                        </Label>
+                        <Select v-model="form.package_id">
+                            <SelectTrigger id="package_id" class="w-full data-[size=default]:h-10">
+                                <SelectValue placeholder="Pilih Paket" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem
+                                    v-for="pkg in packageStore.packages"
+                                    :key="pkg.id"
+                                    :value="pkg.id">
+                                    {{ pkg.name }}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+
+                <!-- Notes -->
                 <div class="space-y-1.5">
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">Paket Pernikahan</label>
-                    <select v-model="form.package_id"
-                            class="w-full px-4 py-2 bg-surface-50 border border-surface-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium appearance-none">
-                        <option value="">Pilih Paket</option>
-                        <option v-for="pkg in packageStore.packages" :key="pkg.id" :value="pkg.id">
-                            {{ pkg.name }}
-                        </option>
-                    </select>
+                    <Label for="notes" class="text-[10px] font-black uppercase tracking-widest text-surface-500">
+                        Catatan
+                    </Label>
+                    <Textarea
+                        id="notes"
+                        v-model="form.notes"
+                        rows="3"
+                        placeholder="Masukan catatan"
+                        class="resize-none" />
                 </div>
-            </div>
 
-            <!-- Notes -->
-            <div class="space-y-1.5">
-                <label class="block text-[10px] font-black uppercase tracking-widest text-surface-500 ml-1">Catatan</label>
-                <textarea v-model="form.notes" rows="3" placeholder="Masukan catatan"
-                          class="w-full px-4 py-2 bg-surface-50 border border-surface-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-medium resize-none"></textarea>
-            </div>
+                <div
+                    v-if="error"
+                    class="rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-center text-xs font-bold uppercase tracking-wide text-destructive">
+                    {{ error }}
+                </div>
+            </form>
 
-            <div v-if="error" class="p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 font-bold uppercase tracking-wide text-center">
-                {{ error }}
-            </div>
-        </form>
-
-        <template #footer>
-            <div class="flex items-center justify-end gap-3 w-full">
-                <button type="button" @click="$emit('close')"
-                        class="px-6 py-2.5 text-sm font-bold text-surface-600 hover:text-surface-900 transition-colors">
+            <DialogFooter>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="lg"
+                    class="h-10 px-4"
+                    @click="$emit('close')">
                     Batal
-                </button>
-                <button type="submit" form="clientForm" :disabled="submitting"
-                        class="px-8 py-2.5 bg-[#065f46] text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-900/20 hover:bg-emerald-900 transition-all active:scale-95 disabled:opacity-50">
+                </Button>
+                <Button
+                    type="submit"
+                    form="clientForm"
+                    size="lg"
+                    class="h-10 px-6"
+                    :disabled="submitting">
+                    <Loader2Icon v-if="submitting" class="size-4 animate-spin" />
                     {{ submitting ? 'Memproses...' : 'Simpan' }}
-                </button>
-            </div>
-        </template>
-    </Modal>
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { Loader2Icon, UserPlusIcon } from '@lucide/vue'
 import { useClientStore } from '@/stores/client'
 import { usePackageStore } from '@/stores/package'
-import Modal from '@/components/ui/Modal.vue'
+import { Button } from '@/components/ui/button'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 
 const props = defineProps({
     show: Boolean,
@@ -110,66 +193,61 @@ const packageStore = usePackageStore()
 const submitting = ref(false)
 const error = ref('')
 
-const isEdit = ref(false)
+const open = computed({
+    get: () => props.show,
+    set: (value) => {
+        if (!value) emit('close')
+    },
+})
 
-const form = reactive({
+const isEdit = computed(() => Boolean(props.client))
+
+const blankForm = {
     bride_name: '',
     groom_name: '',
     bride_phone: '',
     groom_phone: '',
-    email: '',
     event_date: '',
     event_location: '',
     package_id: '',
     notes: '',
-})
+}
 
-onMounted(() => {
-    packageStore.fetchPackages()
-})
+const form = reactive({ ...blankForm })
 
-watch(() => props.show, (newShow) => {
-    if (newShow) {
-        error.value = ''
-        if (props.client) {
-            isEdit.value = true
-            Object.assign(form, {
-                bride_name: props.client.bride_name || '',
-                groom_name: props.client.groom_name || '',
-                bride_phone: props.client.bride_phone || '',
-                groom_phone: props.client.groom_phone || '',
-                email: props.client.email || '',
-                event_date: props.client.event_date || '',
-                event_location: props.client.event_location || '',
-                package_id: props.client.package_id || '',
-                notes: props.client.notes || '',
-            })
-        } else {
-            isEdit.value = false
-            Object.assign(form, {
-                bride_name: '',
-                groom_name: '',
-                bride_phone: '',
-                groom_phone: '',
-                email: '',
-                event_date: '',
-                event_location: '',
-                package_id: '',
-                notes: '',
-            })
-        }
+const fillForm = (client) => {
+    Object.assign(form, blankForm)
+
+    if (!client) return
+
+    for (const key of Object.keys(blankForm)) {
+        form[key] = client[key] ?? ''
     }
-})
+}
+
+onMounted(() => packageStore.fetchPackages())
+
+watch(
+    () => props.show,
+    (visible) => {
+        if (!visible) return
+        error.value = ''
+        fillForm(props.client)
+    },
+    { immediate: true },
+)
 
 const handleSubmit = async () => {
     submitting.value = true
     error.value = ''
+
     try {
         if (isEdit.value) {
             await clientStore.updateClient(props.client.id, form)
         } else {
             await clientStore.createClient(form)
         }
+
         emit('saved')
         emit('close')
     } catch (err) {

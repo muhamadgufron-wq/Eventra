@@ -6,13 +6,12 @@
                 <h1 class="text-3xl font-serif font-bold text-surface-900">Database Client</h1>
                 <p class="text-xs font-bold text-surface-400 uppercase tracking-widest mt-1">Kelola informasi mempelai dan detail acara</p>
             </div>
-            <button @click="openCreateModal"
-                          class="inline-flex items-center gap-2 px-6 py-3 bg-primary-800 text-white rounded-2xl text-sm font-bold hover:bg-primary-700 transition-all shadow-xl shadow-primary-950/20 active:scale-95">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
-                </svg>
+            <Button
+                class="h-12 gap-2 rounded-2xl px-6 text-sm font-bold shadow-xl shadow-primary-900/20"
+                @click="openCreateModal">
+                <UserPlusIcon class="size-5" />
                 Registrasi Client Baru
-            </button>
+            </Button>
         </div>
 
         <DataTable
@@ -31,40 +30,45 @@
 
             <template #cell-actions="{ row }">
                 <div class="flex items-center gap-2">
-                    <button @click="openEditModal(row)"
-                                 class="p-1.5 rounded-lg hover:bg-surface-100 text-surface-500 hover:text-primary-600 transition-colors">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                        </svg>
-                    </button>
-                    <button @click="confirmDelete(row)"
-                            class="p-1.5 rounded-lg hover:bg-red-50 text-surface-500 hover:text-red-600 transition-colors">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                        </svg>
-                    </button>
+                    <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        class="text-surface-500 hover:text-primary-600"
+                        aria-label="Edit client"
+                        @click="openEditModal(row)">
+                        <PencilIcon />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        class="text-surface-500 hover:bg-destructive/10 hover:text-destructive"
+                        aria-label="Hapus client"
+                        @click="confirmDelete(row)">
+                        <Trash2Icon />
+                    </Button>
                 </div>
             </template>
         </DataTable>
 
-        <!-- Delete Confirmation Modal -->
-        <Modal :show="showDeleteModal" title="Hapus Client" @close="showDeleteModal = false">
-            <p class="text-sm text-surface-600">
-                Apakah Anda yakin ingin menghapus client
-                <strong>{{ clientToDelete?.bride_name }} & {{ clientToDelete?.groom_name }}</strong>?
-                Tindakan ini tidak dapat dibatalkan.
-            </p>
-            <template #footer>
-                <button @click="showDeleteModal = false"
-                        class="px-4 py-2 text-sm font-medium text-surface-700 bg-surface-100 rounded-lg hover:bg-surface-200 transition-colors">
-                    Batal
-                </button>
-                <button @click="handleDelete"
-                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
-                    Hapus
-                </button>
-            </template>
-        </Modal>
+        <!-- Delete Confirmation -->
+        <AlertDialog v-model:open="showDeleteModal">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Hapus Client</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Apakah Anda yakin ingin menghapus client
+                        <strong>{{ clientToDelete?.bride_name }} & {{ clientToDelete?.groom_name }}</strong>?
+                        Tindakan ini tidak dapat dibatalkan.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                    <AlertDialogAction variant="destructive" @click="handleDelete">
+                        Hapus
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
 
         <!-- Client Form Modal -->
         <ClientFormModal
@@ -72,22 +76,26 @@
             :client="selectedClient"
             @close="showFormModal = false"
             @saved="onClientSaved" />
-
-        <!-- Success Notification Modal -->
-        <SuccessModal
-            :show="showSuccessModal"
-            :title="successTitle"
-            :message="successMessage"
-            @close="showSuccessModal = false" />
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
+import { PencilIcon, Trash2Icon, UserPlusIcon } from '@lucide/vue'
+import { toast } from 'vue-sonner'
 import { useClientStore } from '@/stores/client'
 import DataTable from '@/components/ui/DataTable.vue'
-import Modal from '@/components/ui/Modal.vue'
-import SuccessModal from '@/components/ui/SuccessModal.vue'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import ClientFormModal from '@/components/clients/ClientFormModal.vue'
 
 const clientStore = useClientStore()
@@ -96,9 +104,6 @@ const showFormModal = ref(false)
 const clientToDelete = ref(null)
 const selectedClient = ref(null)
 const searchTerm = ref('')
-const showSuccessModal = ref(false)
-const successTitle = ref('Berhasil Disimpan')
-const successMessage = ref('')
 
 const columns = [
     { key: 'bride_name', label: 'Mempelai Wanita' },
@@ -126,9 +131,13 @@ const confirmDelete = (client) => {
 }
 
 const handleDelete = async () => {
-    await clientStore.deleteClient(clientToDelete.value.id)
-    showDeleteModal.value = false
-    clientToDelete.value = null
+    try {
+        await clientStore.deleteClient(clientToDelete.value.id)
+        showDeleteModal.value = false
+        clientToDelete.value = null
+    } catch (err) {
+        toast.error(err.response?.data?.message || 'Gagal menghapus client.')
+    }
 }
 
 const openCreateModal = () => {
@@ -143,11 +152,13 @@ const openEditModal = (client) => {
 
 const onClientSaved = () => {
     const isEditing = selectedClient.value !== null
-    successTitle.value = 'Berhasil Disimpan'
-    successMessage.value = isEditing
-        ? 'Data klien telah berhasil diperbarui ke dalam sistem secara otomatis.'
-        : 'Data klien baru telah berhasil ditambahkan ke dalam sistem secara otomatis.'
-    showSuccessModal.value = true
+
+    toast.success('Berhasil Disimpan', {
+        description: isEditing
+            ? 'Data klien telah berhasil diperbarui ke dalam sistem secara otomatis.'
+            : 'Data klien baru telah berhasil ditambahkan ke dalam sistem secara otomatis.',
+    })
+
     clientStore.fetchClients({ search: searchTerm.value })
 }
 
